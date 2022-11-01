@@ -1,0 +1,248 @@
+openapi: 3.0.3
+info:
+  title: Librty Development Kit
+  description: >-
+    This document is based on the OpenAPI 3.0 specification.
+
+
+
+    _If you're looking for the Swagger 2.0/OAS 2.0 version of Petstore, then
+    click
+    [here](https://editor.swagger.io/?url=https://petstore.swagger.io/v2/swagger.yaml).
+    Alternatively, you can load via the `Edit > Load Petstore OAS 2.0` menu
+    option!_
+
+
+    Some useful links:
+
+    - [The Pet Store
+    repository](https://github.com/swagger-api/swagger-petstore)
+
+    - [The source API definition for the Pet
+    Store](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)
+
+
+    Contact us to get your API KEY
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.0.1
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://ldk.librty.xyz
+  - url: https://ldk.staging.librty.xyz
+  - url: http://localhost:801
+tags:
+  - name: wallet
+    description: Access from Game Client
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+paths:
+  /wallet/getAccessToken:
+    post:
+      tags:
+        - wallet
+      summary: Login to the librty backend and get access token
+      description: Verify access to wallet and get a JWT token
+      requestBody:
+        description: Signed message
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Signature'
+        required: true
+      responses:
+        '200':
+          description: Successfull Login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Jwt'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - api_key: []
+  /wallet/refreshAccessToken:
+    get:
+      tags:
+        - wallet
+      summary: refresh your access token
+      description: If your access token is expired you can refresh it using this api
+      responses:
+        '200':
+          description: Successfully Refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Jwt'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - api_key: []
+          bearerAuth: []
+  /wallet/tokenGrant:
+    post:
+      tags:
+        - wallet
+      summary: grant tokens to a verified user
+      description: Grants tokens to a user
+      requestBody:
+        description: address
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenGrant'
+        required: true
+      responses:
+        '200':
+          description: Grant Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenGrantResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - api_key: []
+          bearerAuth: []
+  /wallet/tokenGrantStatus:
+    post:
+      tags:
+        - wallet
+      summary: status of grant tokens
+      description: get status of the granted tokens to an address
+      requestBody:
+        description: transaction id
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenGrantStatus'
+        required: true
+      responses:
+        '200':
+          description: Successfully granted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenGrantStatusResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - api_key: []
+          bearerAuth: []
+components:
+  schemas:
+    TokenGrant:
+      type: object
+      properties:
+        address:
+          type: string
+          example: 0xQWERTYUIOPASDFGHJKLZXCVBNM123456
+        tokens:
+          type: string
+          example: '1000'
+    TokenGrantStatus:
+      type: object
+      properties:
+        address:
+          type: string
+          example: 0xQWERTYUIOPASDFGHJKLZXCVBNM123456
+        txnId:
+          type: string
+          example: 'asdasFECdcmsnf'
+    Signature:
+      type: object
+      properties:
+        signer:
+          type: string
+          example: 0xQWERTYUIOPASDFGHJKLZXCVBNM123456
+        message:
+          type: string
+          example: verify me
+        signature:
+          type: string
+          example: 0xSHJGRSKNGJRKHJKNJDSKNFJSKNGFDFSD
+    Jwt:
+      type: object
+      properties:
+        address:
+          type: string
+          example: 0xQWERTYUIOPASDFGHJKLZXCVBNM123456
+        accessToken:
+          type: string
+          example: FDJSKLF.FDKSLFS.FDSFSF
+        refreshToken:
+          type: string
+          example: FDJSKLF.FDKSLFS.FDSFSF
+    TokenGrantResponse:
+      type: object
+      properties:
+        address:
+          type: string
+          example: 0xQWERTYUIOPASDFGHJKLZXCVBNM123456
+        txnId:
+          type: string
+          example: 'asdasFECdcmsnf'
+    TokenGrantStatusResponse:
+      type: object
+      properties:
+        txnId:
+          type: string
+          example: 'asdasFECdcmsnf'
+        status:
+          type: string
+          example: 'processing'
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          example: error
+        message:
+          type: string
+          example: some error occured
+      required:
+        - code
+        - message
+  responses:
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: X-API-KEY
+      in: header
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
