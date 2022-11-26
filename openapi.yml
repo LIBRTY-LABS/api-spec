@@ -5,7 +5,7 @@ info:
     This document is based on the OpenAPI 3.0 specification.
 
     The api endpoints described in this document needs an API key. Contact us to get your api key
-  termsOfService:
+  termsOfService: none
   contact:
     email: nitin@librty.xyz
   license:
@@ -13,8 +13,8 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 0.0.1
 externalDocs:
-  description: 
-  url: 
+  description: none
+  url: none
 servers:
   - url: https://ldk.librty.xyz
   - url: https://ldk.staging.librty.xyz
@@ -22,8 +22,8 @@ tags:
   - name: wallet
     description: Access from Game Client
     externalDocs:
-      description:
-      url: 
+      description: none
+      url: none
 paths:
   /wallet/getAccessToken:
     post:
@@ -98,6 +98,33 @@ paths:
       security:
         - api_key: []
           bearerAuth: []
+  /wallet/tokenDeduct:
+    post:
+      tags:
+        - wallet
+      summary: get tokens deduct transaction for a user
+      description: get tokens transfer transaction
+      requestBody:
+        description: address
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenDeduct'
+        required: true
+      responses:
+        '200':
+          description: Deduct Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenDeductResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - api_key: []
+          bearerAuth: []
   /wallet/tokenGrantStatus:
     post:
       tags:
@@ -134,6 +161,15 @@ components:
           type: string
           example: 0xQWERTYUIOPASDFGHJKLZXCVBNM123456
         tokens:
+          type: string
+          example: '1000'
+    TokenDeduct:
+      type: object
+      properties:
+        address:
+          type: string
+          example: 0xQWERTYUIOPASDFGHJKLZXCVBNM123456
+        amount:
           type: string
           example: '1000'
     TokenGrantStatus:
@@ -178,6 +214,48 @@ components:
         txnId:
           type: string
           example: 'asdasFECdcmsnf'
+    TokenDeductResponse:
+      type: object
+      properties:
+        type:
+          type: string
+          example: 0x0
+        nonce:
+          type: string
+          example: 0xb
+        gasPrice:
+          type: string
+          example: 0x763948fb
+        maxPriorityFeePerGas:
+          type: string
+          example: 0x763948fb
+        maxFeePerGas:
+          type: string
+          example: 0x763948fb
+        gas:
+          type: string
+          example: 0x5444
+        value:
+          type: string
+          example: 0x0
+        input:
+          type: string
+          example: 0xa9059cbb00000000000000000000000052b50644a9fef330ffc7a93d92a4b7591d5a3903000000000000000000000000000000000000000000000000000000000000000a
+        v:
+          type: string
+          example: 0x0
+        r:
+          type: string
+          example: 0x0
+        s:
+          type: string
+          example: 0x0
+        to:
+          type: string
+          example: 0x8b0bca2bb41b126a2bd43453cc0c25a4b8f7cc31
+        hash:
+          type: string
+          example: 0x8230b1e3e701e677666b9b4a6f4a66793f99a2a4f7c9a3a593dcb7a019d2a52a
     TokenGrantStatusResponse:
       type: object
       properties:
